@@ -45,7 +45,7 @@ export default function LoginPage() {
         router.push("/");
       } else {
         toast.error(res?.error || "Failed to login", {
-          description: "Please try again toast error",
+          description: "Please try again",
           position: "top-center",
           duration: 4000,
         });

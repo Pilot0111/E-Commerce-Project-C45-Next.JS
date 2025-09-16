@@ -30,7 +30,10 @@ export const authOptions: NextAuthOptions = {
             }
           );
           const data = await response.json();
-          const decodedToken =JSON.parse( atob(data.token.split(".")[1]))
+          if (!response.ok || !data.token) {
+            throw new Error(data.message || "Invalid email or password");
+          }
+          const decodedToken = JSON.parse(atob(data.token.split(".")[1]));
           if (!response.ok) {
             throw new Error(data.message || "Failed to login");
           } else {
@@ -47,23 +50,23 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
 
-callbacks: {
-  async jwt({ token, user }) {
-    if (user) {
-      token.user = user.user;
-      token.token = user.token;
-      token.id = user.id;
-    }
-    return token;
-  },    
-  async session({ session, token }) {
-    if (token) {
-      session.user= token.user;
-      session.user.id = token.id;
-    }
-    return session;         
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.user = user.user;
+        token.token = user.token;
+        token.id = user.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token) {
+        session.user = token.user;
+        session.user.id = token.id;
+      }
+      return session;
+    },
   },
-},
   pages: {
     signIn: "/login",
   },
